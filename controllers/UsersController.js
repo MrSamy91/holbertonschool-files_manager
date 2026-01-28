@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { ObjectId } from 'mongodb';
-import dbClient from '../utils/db.mjs';
-import redisClient from '../utils/redis.mjs';
+import dbClient from '../utils/db';
+import redisClient from '../utils/redis';
 
 export const postNew = async (req, res) => {
   const { email, password } = req.body;
