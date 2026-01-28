@@ -123,3 +123,54 @@ export const postUpload = async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const getShow = async (req, res) => {
+  const token = req.header('X-Token');
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const key = `auth_${token}`;
+    const userId = await redisClient.get(key);
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const usersCollection = dbClient.db.collection('users');
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const filesCollection = dbClient.db.collection('files');
+    const fileId = req.params.id;
+
+    if (!ObjectId.isValid(fileId)) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    const file = await filesCollection.findOne({
+      userId: user._id,
+      _id: new ObjectId(fileId),
+    });
+
+    if (!file) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    return res.status(200).json({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
+    });
+  } catch (err) {
+    console.error('Error getting specific file:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
