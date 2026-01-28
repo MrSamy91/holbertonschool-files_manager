@@ -1,0 +1,13 @@
+{
+  "name": "holbertonschool-files_manager",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Files manager project",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node"
+  },
+  "dependencies": {
+    "redis": "^4.6.7"
+  }
+}
